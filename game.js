@@ -31,46 +31,82 @@ function playRound(playerSelection, computerSelection) {
   return gameState;
 }
 
-function playGame() {
-  let playerScore = 0;
-  let computerScore = 0;
-  // loop n times
-  const n = 5;
-  for (let i = 0; i < n; i++) {
-    // get player selection
-    let playerSelection = prompt(`Choose one [Rock, Paper, Scissors]: `);
-    // get computer selection
-    const computerSelection = getComputerChoice();
-    // play round and store gameState for player1.
-    let gameState = playRound(playerSelection, computerSelection);
+function updateResultText(text) {
+  resultsDiv.textContent = text;
+}
 
-    // update scores based on gameState and print round winner
-    if (gameState == 1) {
-      playerScore++;
-      console.log(
-        `You win this round! ${playerSelection} beats ${computerSelection}`
-      );
-    } else if (gameState == -1) {
-      computerScore++;
-      console.log(
-        `You lose this round! ${computerSelection} beats ${playerSelection}`
-      );
-    } else {
-      console.log(`Its a draw! No one wins!`);
-    }
-  }
+function updateChoices(playerSelection, computerSelection) {
+  playerChoiceDiv.textContent = playerSelection;
+  computerChoiceDiv.textContent = computerSelection;
+}
 
-  printGameWinner(playerScore, computerScore);
+function updateScores(playerScore, computerScore) {
+  playerScoreDiv.textContent = playerScore;
+  computerScoreDiv.textContent = computerScore;
 }
 
 function printGameWinner(player1Score, player2Score) {
   if (player1Score > player2Score) {
-    console.log(`Player1 wins by ${player1Score} to ${player2Score}`);
+    updateResultText(`Player1 wins by ${player1Score} to ${player2Score}`);
   } else if (player2Score > player1Score) {
-    console.log(`Player2 wins by ${player2Score} to ${player1Score}`);
+    updateResultText(`Player2 wins by ${player2Score} to ${player1Score}`);
   } else {
-    console.log(
+    updateResultText(
       `Its a draw! Player1: ${player1Score}. Player2: ${player2Score}`
     );
   }
+}
+
+let playerScore = 0;
+let computerScore = 0;
+let totalRounds = 0;
+
+const gameBtns = document.querySelector("#game-btns");
+
+const resultsDiv = document.querySelector("#display");
+
+const playerChoiceDiv = document.querySelector("#playerChoice");
+const computerChoiceDiv = document.querySelector("#computerChoice");
+
+const playerScoreDiv = document.querySelector("#playerScore");
+const computerScoreDiv = document.querySelector("#computerScore");
+
+const totalRoundsDiv = document.querySelector("#totalRounds");
+
+gameBtns.addEventListener("click", function (e) {
+  totalRounds++;
+  totalRoundsDiv.textContent = totalRounds;
+  let playerSelection = toTitleCase(e.target.id);
+  const computerSelection = getComputerChoice();
+
+  updateChoices(playerSelection, computerSelection);
+
+  let gameState = playRound(playerSelection, computerSelection);
+  if (gameState == 1) {
+    playerScore++;
+    updateResultText(
+      `You win this round! ${playerSelection} beats ${computerSelection}`
+    );
+  } else if (gameState == -1) {
+    computerScore++;
+    updateResultText(
+      `You lose this round! ${computerSelection} beats ${playerSelection}`
+    );
+  } else {
+    updateResultText(`Its a draw! No one wins!`);
+  }
+
+  updateScores(playerScore, computerScore);
+
+  if (playerScore === 5 || computerScore === 5) {
+    printGameWinner(playerScore, computerScore);
+    resetGame();
+  }
+});
+
+function resetGame() {
+  playerScore = 0;
+  computerScore = 0;
+  totalRounds = 0;
+  updateChoices("choice", "choice");
 }
